@@ -1,0 +1,25 @@
+[ -f ../../config ] && . ../../config
+[ -f ../config ]    && . ../config
+[ -f config ]       && . config
+
+default="${fstype}_default"
+for i in ${!default} ; do
+    . ${i}.config
+done
+
+[ -f `basename "$0"`.config ] && . `basename "$0"`.config
+
+cleanup()
+{
+    umount ${device}
+}
+
+use()
+{
+    exclude=${fstype}_exclude
+    echo ${!default} ${!exclude} | grep -q -v -w `basename "$0"`
+}
+
+declare -A log2_table=([1]=0 [2]=1 [4]=2 [8]=3 [16]=4 [32]=5 [64]=6 [128]=7 [256]=8 [512]=9 [1024]=10)
+
+:
