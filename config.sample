@@ -21,7 +21,7 @@ result_dir=result
 #
 # Which IO schedulers should not be applied
 #
-iosched_exclude="cfq deadline row"
+iosched_exclude="cfq deadline"
 
 #
 # Which benchmarks should not be run
