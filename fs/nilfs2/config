@@ -1,0 +1,5 @@
+fstype=nilfs2
+mkfs=mkfs.nilfs2
+mkfs_options="-f"
+
+tunefs=nilfs-tune

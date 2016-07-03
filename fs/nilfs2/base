@@ -7,7 +7,7 @@ case "$1" in
     prepare)
         ${mkfs} ${mkfs_options} ${device}
         [ -z "${tunefs_options}" ] || ${tunefs} ${tunefs_options} ${device}
-        mount -o ${ext4_mount_options} ${device} "${mount_dir}"
+        mount -o ${nilfs2_mount_options} ${device} "${mount_dir}"
         ;;
 
     cleanup)

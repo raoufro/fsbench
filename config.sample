@@ -6,29 +6,17 @@
 # Device for benchmarking.
 # Note: it will be reformatted.
 #
-device=/dev/mmcblk0p3
+device=/dev/sdb
 
 #
 # Where the device will be mounted.
 #
-mount_dir=/media/mmcblk0p3
+mount_dir=/media/sdb
 
 #
 # Where the results will go.
 #
 result_dir=result
-
-#
-# Media page size, bytes.
-# Will be used to tune FS geometry.
-#
-media_page_size=16384
-
-#
-# Media erase block size, bytes.
-# Will be used to tune FS geometry.
-#
-media_erase_block_size=4194304
 
 #
 # Which IO schedulers should not be applied
@@ -41,34 +29,16 @@ iosched_exclude="cfq deadline row"
 #benchmark_exclude="fio-database fio-fileserver"
 
 #
-# Which FS options to apply to baseline for ext4.
-# Space-separated list of executable script names under fs/ext4.
+# Which FS mount options to apply to ext4.
 #
-#ext4_default="nobarrier noatime"
+ext4_mount_options="barrier,noatime,discard"
 
 #
-# Which FS options should not be tried for ext4.
+# Which FS mount options to apply to f2fs.
 #
-#ext4_exclude=""
+f2fs_mount_options="noatime,discard"
 
 #
-# Which FS options to apply to baseline for btrfs.
-# Space-separated list of executable script names under fs/btrfs.
+# Which FS mount options to apply to nilfs2.
 #
-#btrfs_default="ssd noatime"
-
-#
-# Which FS options should not be tried for btrfs.
-#
-#btrfs_exclude=""
-
-#
-# Which FS options to apply to baseline for f2fs.
-# Space-separated list of executable script names under fs/f2fs.
-#
-#f2fs_default="noatime"
-
-#
-# Which FS options should not be tried for f2fs.
-#
-#f2fs_exclude=""
+nilfs2_mount_options="discard"

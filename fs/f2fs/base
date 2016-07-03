@@ -6,14 +6,10 @@ cd `dirname "$0"`
 case "$1" in
     prepare)
         ${mkfs} ${mkfs_options} ${device}
-        mount -t ${fstype} -o "${mount_options#,}" ${device} "${mount_dir}"
+        mount -t ${fstype} -o "${f2fs_mount_options}" ${device} "${mount_dir}"
         ;;
 
     cleanup)
         cleanup
-        ;;
-
-    use)
-        use
         ;;
 esac

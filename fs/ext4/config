@@ -1,5 +1,5 @@
 fstype=ext4
 mkfs=mkfs.ext4
-mkfs_options="${mkfs_options} -m 0 -E discard"
+mkfs_options="-F -E discard"
 
 tunefs=tune2fs
