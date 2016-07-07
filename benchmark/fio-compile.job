@@ -1,19 +1,19 @@
 [global]
-size=${work_set_size}
 direct=0
+ioengine=psync
 directory=${mount_dir}
-nrfiles=${num_files}
+nrfiles=1000
 filesize=4096-1048576
 fallocate=none
-#create_on_open=1
+numjobs=$ncpus*2
 thread
 group_reporting
-
-numjobs=${num_jobs}
 file_service_type=sequential
+unified_rw_reporting=1
 
-[compile_r]
-rw=read
+[compile-read]
+rw=randread
 
-[compile_w]
+[compile-write]
 rw=write
+

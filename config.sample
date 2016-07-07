@@ -26,7 +26,7 @@ iosched_exclude="cfq deadline row"
 #
 # Which benchmarks should not be run
 #
-benchmark_exclude="fio-database fio-fileserver fio-compile fio-sync-randread fio-sync-randwrite fio-sync-write fio-untar fio-grep"
+benchmark_exclude="fio-sync-read fio-sync-randread fio-sync-randwrite fio-sync-write fio-grep fio-untar" 
 
 #
 # Which block sizes should be used in microbenchmark
