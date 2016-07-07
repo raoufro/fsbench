@@ -16,17 +16,27 @@ mount_dir=/media/sdb
 #
 # Where the results will go.
 #
-result_dir=result
+result_dir=/home/fio/fsbench/result
 
 #
 # Which IO schedulers should not be applied
 #
-iosched_exclude="cfq deadline"
+iosched_exclude="cfq deadline row"
 
 #
 # Which benchmarks should not be run
 #
-#benchmark_exclude="fio-database fio-fileserver"
+benchmark_exclude="fio-database fio-fileserver fio-compile fio-sync-randread fio-sync-randwrite fio-sync-write fio-untar fio-grep"
+
+#
+# Which block sizes should be used in microbenchmark
+#
+block_size_options="512 4096 2097152"
+
+# 
+# Which file size should be used in proportion to memory
+#
+io_size_ratio="0.5 1 2"
 
 #
 # Which FS mount options to apply to ext4.

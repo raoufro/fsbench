@@ -16,10 +16,11 @@ cleanup()
 
 get_result_name()
 {
-    fs_name=`dirname "${fs}"`
+    fs_name=`basename $(dirname "${fs}")`
 	iosched_name=`basename "${iosched}"`
 	benchmark_name=`basename "${benchmark}"`
-    result=`readlink -m "${result_dir:-result}/${fs_name}/${iosched_name}-${benchmark_name}"`
+    result=`readlink -m "${result_dir}/${fs_name}/${iosched_name}-${benchmark_name}"`
+	export result
 }
 
 run_single()
@@ -27,13 +28,14 @@ run_single()
     trap cleanup EXIT
 
     get_result_name
+
     [ -f "${result}" ] && return
 
     "${fs}" prepare
     "${iosched}" prepare
     mkdir -p `dirname "${result}"`
-    echo 3 > /proc/sys/vm/drop_caches || :
-    time { "${benchmark}" run | tee "${result}" ; }
+    echo 3 > /proc/sys/vm/drop_caches
+    time { "${benchmark}" run ; }
     "${fs}" cleanup
 }
 
@@ -61,14 +63,9 @@ run()
 print_help()
 {
     cat << EOF
-Usage: run [analyze|gdiff|geometry|help]
+Usage: run [help]
 
         run:            run benchmarks
-        run analyze {throughput|latency}:
-                        suggest FS options/IO schedulers based on measured
-                        performance data to optimize throughput or latency
-        run gdiff:      plot performance data grouped by benchmark
-        run geometry:   run flashbench and suggest medium geometry parameters
         run help:       this help
 EOF
 }

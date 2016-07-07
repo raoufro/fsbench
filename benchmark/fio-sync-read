@@ -1,34 +1,34 @@
 #! /bin/bash -e
 
 cd `dirname "$0"`
-. fio-common
-
-x_label="Block size (bytes)"
+. common
 
 fio_run()
 {
-    for BS in 4096 16384 65536 262144 1048576 ; do
-        export BS mount_dir RW
-        echo -n "$BS "
-        fio --minimal fio-sync.job | fio_filter
+	for DIRECT_IO in 0 1 ; do
+		for IO_SIZE in ${io_size_ratio:-0.5 1 2} ; do 
+		    for BS in ${block_size_options:-512 4096 2097152} ; do
+				echo $DIRECT_IO, $IO_SIZE, $BS
+				if [ ${DIRECT_IO} -eq 1 ]; then
+					sync_type="direct"
+				else
+					sync_type="buffered"
+				fi
+				output_file=${result}-${sync_type}-${IO_SIZE}-${BS}
+				echo $output_file
+				[ -f ${output_file} ] && continue
+
+				export DIRECT_IO IO_SIZE BS mount_dir RW 
+
+    		    echo "Direct IO=${DIRECT_IO}, IO Size=${IO_SIZE}, Block Size=${BS}"
+				echo 3 > /proc/sys/vm/drop_caches
+        		fio --output-format=json --output=${output_file} fio-sync.job
+			done
+		done
     done
 }
 
 case "$1" in
-    diff)
-        shift
-        ;;
-
-    gdiff)
-        shift
-        fio_gdiff "$@"
-        ;;
-
-    metric)
-        shift
-        fio_metric "$@"
-        ;;
-
     run)
         fio_run
         ;;

@@ -1,10 +1,13 @@
 [global]
+ioengine=sync
+invalidate=1
+unlink=1
+
+[job]
 rw=${RW}
-size=256m
-direct=1
+size=${IO_SIZE}*$mb_memory*(2^20)
+direct=${DIRECT_IO}
 bs=${BS}
-runtime=1m
 directory=${mount_dir}
 filename=fio
 
-[job]
