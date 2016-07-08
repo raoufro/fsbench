@@ -5,7 +5,7 @@ export PATH=$PATH:$PWD/fsbench-utils
 . config || {
     cat << EOF
 There's no config file in the current directory.
-Please create it (see config.sample in the flashopt root directory).
+Please create it (see config.sample).
 
 EOF
     exit 1
@@ -37,13 +37,12 @@ run_single()
     "${iosched}" prepare
     mkdir -p `dirname "${result}"`
     echo 3 > /proc/sys/vm/drop_caches
-    time { "${benchmark}" run ; }
+    "${benchmark}" run
     "${fs}" cleanup
 }
 
 run()
 {
-
     for fs in fs/*/* ; do
         [ -x "${fs}" ] || continue
         echo ${fs}

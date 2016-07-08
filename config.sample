@@ -16,17 +16,17 @@ mount_dir=/media/sdb
 #
 # Where the results will go.
 #
-result_dir=/home/fio/fsbench/result
+result_dir=/home/roraouf/fsbench/result
 
 #
 # Which IO schedulers should not be applied
 #
-iosched_exclude="cfq deadline row"
+iosched_exclude="cfq deadline"
 
 #
 # Which benchmarks should not be run
 #
-benchmark_exclude="fio-sync-read fio-sync-randread fio-sync-randwrite fio-sync-write fio-grep fio-untar" 
+benchmark_exclude="fio-sync-read fio-sync-randread fio-sync-randwrite fio-sync-write fio-grep fio-untar fio-compile metadata-fdtree" 
 
 #
 # Which block sizes should be used in microbenchmark

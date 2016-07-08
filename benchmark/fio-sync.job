@@ -2,6 +2,7 @@
 ioengine=sync
 invalidate=1
 unlink=1
+unified_rw_reporting=1
 
 [job]
 rw=${RW}

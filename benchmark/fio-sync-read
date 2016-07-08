@@ -8,14 +8,12 @@ fio_run()
 	for DIRECT_IO in 0 1 ; do
 		for IO_SIZE in ${io_size_ratio:-0.5 1 2} ; do 
 		    for BS in ${block_size_options:-512 4096 2097152} ; do
-				echo $DIRECT_IO, $IO_SIZE, $BS
 				if [ ${DIRECT_IO} -eq 1 ]; then
 					sync_type="direct"
 				else
 					sync_type="buffered"
 				fi
 				output_file=${result}-${sync_type}-${IO_SIZE}-${BS}
-				echo $output_file
 				[ -f ${output_file} ] && continue
 
 				export DIRECT_IO IO_SIZE BS mount_dir RW 
