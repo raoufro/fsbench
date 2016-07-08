@@ -1,0 +1,19 @@
+#! /bin/bash -e
+
+cd `dirname "$0"`
+. common
+
+fdtree_run()
+{
+	fdtree.bash -l ${LEVEL} -d ${DIRS_PER_LEVEL} -f ${FILES_PER_LEVEL} -s ${FILE_SIZE} -o ${mount_dir} | fdtree_json_output.py ${result}
+}
+
+case "$1" in
+    run)
+        fdtree_run
+        ;;
+
+    use)
+        use
+        ;;
+esac

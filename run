@@ -1,5 +1,7 @@
 #! /bin/bash -e
 
+export PATH=$PATH:$PWD/fsbench-utils
+
 . config || {
     cat << EOF
 There's no config file in the current directory.
