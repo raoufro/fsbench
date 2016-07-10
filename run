@@ -1,5 +1,7 @@
 #! /bin/bash -e
 
+clear
+
 export PATH=$PATH:$PWD/fsbench-utils
 
 . config || {
@@ -14,6 +16,7 @@ EOF
 cleanup()
 {
     umount "${mount_dir}"
+	echo -e "\n"
 }
 
 get_result_name()
@@ -45,15 +48,15 @@ run()
 {
     for fs in fs/*/* ; do
         [ -x "${fs}" ] || continue
-        echo ${fs}
+        echo -e "${fs}"
 
         for iosched in iosched/* ; do
             [ -x "${iosched}" ] && "${iosched}" use || continue
-            echo ${iosched}
+            echo -e "${iosched}"
 
             for benchmark in benchmark/* ; do
                 [ -x "${benchmark}" ] && "${benchmark}" use || continue
-                echo ${benchmark}
+                echo -e "${benchmark}"
 
                 run_single
             done

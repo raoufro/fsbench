@@ -1,14 +1,14 @@
 [global]
 size=$mb_memory*(2^20)
 ioengine=psync
-directory=${mount_dir}
 direct=0
-numjobs=4
+directory=${mount_dir}
 nrfiles=10
+numjobs=4
 thread
 group_reporting
 unified_rw_reporting=1
 
-[grep]
-rw=read
+[untar]
+rw=${RW}
 file_service_type=sequential

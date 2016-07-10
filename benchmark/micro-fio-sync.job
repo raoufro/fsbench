@@ -10,5 +10,4 @@ size=${IO_SIZE}*$mb_memory*(2^20)
 direct=${DIRECT_IO}
 bs=${BS}
 directory=${mount_dir}
-filename=fio
 

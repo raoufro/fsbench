@@ -26,17 +26,12 @@ iosched_exclude="cfq deadline"
 #
 # Which benchmarks should not be run
 #
-benchmark_exclude="fio-sync-read fio-sync-randread fio-sync-randwrite fio-sync-write fio-grep fio-untar fio-compile metadata-fdtree" 
-
-#
-# Which block sizes should be used in microbenchmark
-#
-block_size_options="512 4096 2097152"
+benchmark_exclude="micro-fio-sync-randwrite micro-fio-sync-write macro-fio-untar macro-fio-compile macro-workload metadata-fdtree" 
 
 # 
 # Which file size should be used in proportion to memory
 #
-io_size_ratio="0.5 1 2"
+io_size_ratio="0.5 2"
 
 #
 # Which FS mount options to apply to ext4.

@@ -18,9 +18,9 @@ fio_run()
 
 				export DIRECT_IO IO_SIZE BS mount_dir RW 
 
-    		    echo "Direct IO=${DIRECT_IO}, IO Size=${IO_SIZE}, Block Size=${BS}"
+    		    echo -e "\nDirect IO=${DIRECT_IO}, IO Size=${IO_SIZE}, Block Size=${BS}"
 				echo 3 > /proc/sys/vm/drop_caches
-        		fio --output-format=json --output=${output_file} fio-sync.job
+        		fio --output-format=json --output=${output_file} micro-fio-sync.job
 			done
 		done
     done

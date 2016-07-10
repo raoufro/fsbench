@@ -6,6 +6,7 @@ nrfiles=1000
 filesize=4096-1048576
 fallocate=none
 numjobs=$ncpus*2
+randrepeat=1
 thread
 group_reporting
 file_service_type=sequential

@@ -5,7 +5,7 @@ cd `dirname "$0"`
 
 fio_run()
 {
-	export mount_dir
+	export mount_dir RW
 	fio --output-format=json --output=${result} `basename "$0"`.job 
 }
 
