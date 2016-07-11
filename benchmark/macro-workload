@@ -1,0 +1,34 @@
+#! /bin/bash -e
+
+cd `dirname "$0"`
+. common
+
+fio_run()
+{
+	sync
+	block_device=`basename ${device}`
+	blktrace -d ${device} -D${result_dir}&
+	blktrace_pid=$!
+	##### Put the executable file of your workload here #####
+		dd if=/dev/zero of=${mount_dir}/sdb bs=16k count=10000 
+	#########################################################
+	sync
+	kill ${blktrace_pid}
+	blkparse  -D${result_dir} -i ${block_device}.blktrace. -d ${result_dir}/${block_device}.blktrace.bin
+	sleep 10
+	
+	export device result_dir block_device
+	fio --output-format=json --output=${result} `basename "$0"`.job 
+}
+
+case "$1" in
+    run)
+        fio_run
+        ;;
+
+    use)
+        use
+        ;;
+esac
+
+

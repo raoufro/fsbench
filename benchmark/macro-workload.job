@@ -1,0 +1,7 @@
+[macro-worklaod]
+direct=1
+filename=${device}
+read_iolog=${result_dir}/${block_device}.blktrace.bin 
+replay_redirect=${device}
+group_reporting
+unified_rw_reporting=1
