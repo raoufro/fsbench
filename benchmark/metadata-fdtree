@@ -1,11 +1,18 @@
-#! /bin/bash -e
+#! /bin/bash 
 
 cd `dirname "$0"`
 . common
 
 fdtree_run()
 {
-	fdtree.bash -l ${LEVEL} -d ${DIRS_PER_LEVEL} -f ${FILES_PER_LEVEL} -s ${FILE_SIZE} -o ${mount_dir} | fdtree_json_output.py ${result}
+	trap 'error_occured ${result} ${result}' ERR
+	trap 'interrupt_exit ${result} ${result}' SIGINT
+	
+	export PATH=$PATH:${fsbench_utils_dir}
+
+	action "" fdtree.bash -l ${LEVEL} -d ${DIRS_PER_LEVEL} -f ${FILES_PER_LEVEL} -s ${FILE_SIZE} -o ${mount_dir} | fdtree_json_output.py ${result}
+	echo
+	
 }
 
 case "$1" in

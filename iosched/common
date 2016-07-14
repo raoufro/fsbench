@@ -2,9 +2,20 @@
 [ -f config ]                 && . config
 [ -f `basename "$0"`.config ] && . `basename "$0"`.config
 
+. /etc/rc.d/init.d/functions
+
 use()
 {
     echo ${iosched_exclude} | grep -q -v -w `basename "$0"`
 }
 
-:
+error_exit()
+{
+    echo -e "IOSCHEDULER Error: $1\n" >> $logfile
+    exit 1
+}
+
+change_ioscheduler()
+{
+	echo "$1" > "$2"
+}

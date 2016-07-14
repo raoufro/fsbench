@@ -1,4 +1,4 @@
-#! /bin/bash -e
+#! /bin/bash
 
 cd `dirname "$0"`
 . common
@@ -9,7 +9,9 @@ case "$1" in
         while ! [ -d /sys/block/${devname} ] ; do
             devname=${devname:0:-1}
         done
-        echo `basename "$0"` > /sys/block/${devname}/queue/scheduler
+		scheduler=`basename "$0"`
+		trap 'error_exit $0' ERR
+        action "Set $scheduler I/O Scheduler:" change_ioscheduler $scheduler /sys/block/${devname}/queue/scheduler
         ;;
 
     use)

@@ -14,9 +14,14 @@ device=/dev/sdb
 mount_dir=/media/sdb
 
 #
-# Where the results will go.
+# Where the results will stored.
 #
 result_dir=/home/roraouf/fsbench/result
+
+#
+# Where log will be stored.
+#
+logfile=/home/roraouf/fsbench/log/logfile
 
 #
 # Which IO schedulers should not be applied
@@ -26,24 +31,9 @@ iosched_exclude="cfq deadline"
 #
 # Which benchmarks should not be run
 #
-benchmark_exclude="micro-fio-sync-randwrite micro-fio-sync-write macro-fio-untar macro-fio-compile macro-workload metadata-fdtree" 
+benchmark_exclude="micro-fio-sync-read micro-fio-sync-write micro-fio-sync-randread micro-fio-sync-randwrite macro-fio-untar macro-fio-compile macro-workload" 
 
 # 
 # Which file size should be used in proportion to memory
 #
 io_size_ratio="0.5 2"
-
-#
-# Which FS mount options to apply to ext4.
-#
-ext4_mount_options="barrier,noatime,discard"
-
-#
-# Which FS mount options to apply to f2fs.
-#
-f2fs_mount_options="noatime,discard"
-
-#
-# Which FS mount options to apply to nilfs2.
-#
-nilfs2_mount_options="discard"

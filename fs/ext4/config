@@ -1,5 +1,6 @@
 fstype=ext4
 mkfs=mkfs.ext4
 mkfs_options="-F -E discard"
+mount_options="rw"
 
 tunefs=tune2fs

@@ -1,0 +1,17 @@
+#!/bin/bash
+
+cd `dirname "$0"`
+. ../common
+
+case "$1" in
+    prepare)
+		trap 'error_exit $0' ERR
+		action "Create ${fstype}:" make_it
+		[ -z "${tunefs_options}" ] ||	action "Tune ${fstype}:" tune_it
+		action "Mount ${fstype}:" mount_it
+		;;
+
+    cleanup)
+        cleanup
+        ;;
+esac

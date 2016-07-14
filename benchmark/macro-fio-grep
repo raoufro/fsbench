@@ -1,12 +1,17 @@
-#! /bin/bash -e
+#! /bin/bash 
 
 cd `dirname "$0"`
 . common
 
 fio_run()
 {
+	echo -e "Starting `basename "$0"`..."
 	export mount_dir RW
-	fio --output-format=json --output=${result} `basename "$0"`.job 
+    trap 'error_occured "${result}" "${result}"' ERR 
+    trap 'interrupt_exit "${result}" "${result}"' SIGINT
+	#fio --output-format=json --output=${result} `basename "$0"`.job && (echo; success) || (echo; failure)
+	benchmark_command="fio --output-format=json --output=${result} `basename "$0"`.job"
+	action "" run_benchmark ${benchmark_command}
 }
 
 case "$1" in

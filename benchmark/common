@@ -2,9 +2,54 @@
 [ -f config ]                 && . config
 [ -f `basename "$0"`.config ] && . `basename "$0"`.config
 
+. /etc/rc.d/init.d/functions
+
+cleanup ()
+{
+	rm -f $1
+}
+
 use()
 {
     echo ${benchmark_exclude} | grep -q -v -w `basename "$0"`
 }
 
-:
+run_benchmark()
+{
+	$@
+	ret=$?
+	echo
+	return ${ret}
+}
+
+error_occured()
+{
+    echo -e "BENCHMARK Error: $1\n" >> $logfile
+	cleanup $2
+}
+
+error_occured_workload()
+{
+    echo -e "BENCHMARK Error: $1\n" >> $logfile
+	kill -0 $3 && kill $3
+	cleanup $2
+}
+
+interrupt_exit()
+{
+	echo -e "BENCHMARK Interrupt: $1\n" >> $logfile
+	cleanup $2
+	exit 1
+}
+
+interrupt_exit_workload()
+{
+	echo -e "BENCHMARK Interrupt: $1\n" >> $logfile
+	kill -0 $3 && kill $3
+	cleanup $2
+	exit 1
+}
+
+
+
+

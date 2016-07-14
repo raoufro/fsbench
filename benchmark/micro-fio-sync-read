@@ -1,10 +1,11 @@
-#! /bin/bash -e
+#! /bin/bash 
 
 cd `dirname "$0"`
 . common
 
 fio_run()
 {
+	echo "Starting `basename $0`..."
 	for DIRECT_IO in 0 1 ; do
 		for IO_SIZE in ${io_size_ratio:-0.5 1 2} ; do 
 		    for BS in ${block_size_options:-512 4096 2097152} ; do
@@ -18,12 +19,17 @@ fio_run()
 
 				export DIRECT_IO IO_SIZE BS mount_dir RW 
 
-    		    echo -e "\nDirect IO=${DIRECT_IO}, IO Size=${IO_SIZE}, Block Size=${BS}"
+    		    echo -e "Direct IO=${DIRECT_IO}, IO Size=${IO_SIZE}, Block Size=${BS}"
+
+		        trap 'error_occured ${output_file} ${output_file}' ERR 
+		        trap 'interrupt_exit ${output_file} ${output_file}' SIGINT 
 				echo 3 > /proc/sys/vm/drop_caches
-        		fio --output-format=json --output=${output_file} micro-fio-sync.job
+				benchmark_command="fio --output-format=json --output=${output_file} micro-fio-sync.job"
+        		action "" run_benchmark ${benchmark_command}
 			done
 		done
     done
+	echo 
 }
 
 case "$1" in

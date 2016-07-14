@@ -1,5 +1,6 @@
 fstype=nilfs2
 mkfs=mkfs.nilfs2
 mkfs_options="-f"
+mount_options="rw"
 
 tunefs=nilfs-tune

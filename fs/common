@@ -3,8 +3,30 @@
 [ -f config ]       && . config
 
 [ -f `basename "$0"`.config ] && . `basename "$0"`.config
+. /etc/rc.d/init.d/functions
 
+error_exit()
+{
+	echo -e "FS Error: $1\n" >> $logfile
+	exit 1
+}
+
+make_it()
+{
+	${mkfs} ${mkfs_options} ${device} &> /dev/null
+}
+
+tune_it()
+{
+	${tunefs} ${tunefs_options} ${device} &> /dev/null
+}
+
+mount_it()
+{
+	mount -t ${fstype} -o ${mount_options} ${device} ${mount_dir} &> /dev/null
+}
+	
 cleanup()
 {
-    umount ${device}
+    umount ${device} &> /dev/null
 }
