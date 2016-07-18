@@ -70,8 +70,9 @@ print_help()
     cat << EOF
 Usage: run [help]
 
-        run:            run benchmarks
-        run help:       this help
+	run:		run benchmarks
+	show:		show the results of benchmarks
+	run help:	this help
 EOF
 }
 
@@ -84,6 +85,9 @@ case "$1" in
         run_single
         ;;
 
+	show)
+		python fsbench-utils/show_benchmarks.py config
+		;;
     *)
         print_help
         ;;

@@ -1,4 +1,4 @@
 fstype=f2fs
 mkfs=mkfs.f2fs
 mkfs_options=""
-mount_options="rw"
+mount_options="noatime,discard"
