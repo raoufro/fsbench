@@ -1,12 +1,11 @@
 [global]
-size=$mb_memory*(2^20)
+size=$mb_memory*(2^20)/2
 ioengine=psync
 directory=${mount_dir}
 direct=0
 numjobs=4
-nrfiles=10
-thread
-group_reporting
+thread=1
+group_reporting=1
 unified_rw_reporting=1
 file_service_type=sequential
 

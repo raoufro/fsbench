@@ -3,11 +3,13 @@ ioengine=sync
 invalidate=1
 unlink=1
 unified_rw_reporting=1
+directory=${mount_dir}
+randrepeat=1
 
 [job]
 rw=${RW}
 size=${IO_SIZE}*$mb_memory*(2^20)
 direct=${DIRECT_IO}
 bs=${BS}
-directory=${mount_dir}
+
 

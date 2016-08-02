@@ -1,14 +1,13 @@
 [global]
-size=$mb_memory*(2^20)
-ioengine=psync
+size=$mb_memory*(2^20)/2
+ioengine=pvsync
 direct=0
 directory=${mount_dir}
-nrfiles=10
 numjobs=4
-thread
-group_reporting
+thread=1
+group_reporting=1
 unified_rw_reporting=1
+file_service_type=sequential
 
 [untar]
 rw=${RW}
-file_service_type=sequential
