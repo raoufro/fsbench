@@ -1,0 +1,62 @@
+#! /bin/bash 
+
+cd `dirname "$0"`
+. common
+
+sysbench_run()
+{
+	mkdir -p ${mount_dir}/mysql
+	mysql_dir=${mount_dir}/mysql
+	mysql_socket=${mysql_dir}/mysql.sock
+
+	echo "Starting `basename $0`..."
+
+	trap 'error_occured ${output_file} ${output_file}' ERR 
+	trap 'interrupt_exit ${output_file} ${output_file}' SIGINT 
+
+	cp -ar /var/lib/mysql/* ${mysql_dir}
+	chown -R mysql:mysql ${mysql_dir}
+
+	semanage fcontext -a -t mysqld_db_t "${mysql_dir}(/.*)?" > /dev/null
+	restorecon -R -v ${mysql_dir} > /dev/null
+
+#	trap 'mysql_error_occured ${output_file} ${output_file}' ERR 
+#	trap 'mysql_interrupt_exit ${output_file} ${output_file}' SIGINT 
+
+	mysqld_safe --skip-grant-tables --socket=${mysql_socket} --datadir=${mysql_dir}& 2> /dev/null
+	sleep 5
+	mysql -u root -S ${mysql_socket} -e "UPDATE mysql.user SET Password=PASSWORD('password') WHERE User='root';"
+	mysql -u root -S ${mysql_socket} -e "FLUSH PRIVILEGES;"
+
+	mysql -u root -S ${mysql_socket} -ppassword -e "CREATE DATABASE sysbench;"
+	mysql -u root -S ${mysql_socket} -ppassword -e "CREATE USER 'sysbench'@'localhost' IDENTIFIED BY 'password';"
+	mysql -u root -S ${mysql_socket} -ppassword -e "GRANT ALL PRIVILEGES ON *.* TO 'sysbench'@'localhost' IDENTIFIED  BY 'password';"
+	sysbench --test=oltp --db-driver=mysql --oltp-table-size=${records_num}\
+			 --mysql-db=sysbench --mysql-socket=${mysql_socket}\
+			 --mysql-user=sysbench --mysql-password=password prepare > /dev/null
+
+	for thread in 1 4 16 ;do
+		output_file=${result}-${thread}
+		[ -f ${output_file} ] && continue
+		echo "Records=${records_num}, Transactions=${trans_num}, Threads=${thread}"
+		echo 3 > /proc/sys/vm/drop_caches
+
+		sysbench --test=oltp --db-driver=mysql --oltp-table-size=${records_num}\
+				 --mysql-db=sysbench --mysql-user=sysbench --mysql-password=password\
+				 --max-requests=${trans_num} --num-threads=${thread} --mysql-socket=${mysql_socket} run> ${output_file}
+	done
+
+	sysbench --test=oltp --db-driver=mysql --mysql-db=sysbench --mysql-user=sysbench --mysql-password=password  --mysql-socket=${mysql_socket} cleanup > /dev/null
+	mysqladmin --socket=${mysql_socket} -ppassword shutdown
+	echo
+}
+
+case "$1" in
+    run)
+        sysbench_run
+        ;;
+
+    use)
+        use
+        ;;
+esac
