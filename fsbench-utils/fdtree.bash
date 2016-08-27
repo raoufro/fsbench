@@ -357,6 +357,7 @@ then
         echo "create_dirs("$levels,$base")"
     fi
     create_dirs $levels $base
+	sync
     declare -i tout=$SECONDS
     declare -i ttot=tout-tin
     if [ $ttot -eq 0 ]
@@ -379,6 +380,7 @@ then
         echo "create_files("$levels,$base")"
     fi
     create_files $levels $base
+	sync
     declare -i tout=$SECONDS
     declare -i ttot=tout-tin
     if [ $ttot -eq 0 ]
@@ -395,6 +397,8 @@ then
     echo -e "\tKiB per second               = " $results2
 fi
     
+echo 3 > /proc/sys/vm/drop_caches
+
 if [ $REMOVE_TREE -gt 0 ]
 then
     ############################################################################
@@ -407,6 +411,7 @@ then
         echo "remove_files("$levels,$base")"
     fi
     remove_files $levels $base
+	sync
     declare -i tout=$SECONDS
     declare -i ttot=tout-tin
     if [ $ttot -eq 0 ]
@@ -429,6 +434,7 @@ then
         echo "remove_dirs("$levels,$base")"
     fi
     remove_dirs $levels $base
+	sync
     rmdir $base
     declare -i tout=$SECONDS
     declare -i ttot=tout-tin

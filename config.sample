@@ -24,6 +24,11 @@ result_dir=/home/admin/fsbench/result
 logfile=/home/admin/fsbench/log/logfile
 
 #
+# The number of benchmak execution
+# default vaule if 1.  
+runs=4
+
+#
 # Which IO schedulers should not be applied
 #
 iosched_exclude="cfq deadline"
@@ -31,7 +36,12 @@ iosched_exclude="cfq deadline"
 #
 # Which benchmarks should not be run
 #
-benchmark_exclude="" 
+#benchmark_exclude="macro-fio-grep macro-fio-untar macro-fio-compile macro-sysbench-mysql \
+#					micro-fio-sync-read micro-fio-sync-write micro-fio-sync-randread micro-fio-sync-randwrite \
+#					metadata-fdtree"
+benchmark_exclude="macro-fio-grep macro-fio-untar macro-fio-compile \
+					micro-fio-sync-read micro-fio-sync-write micro-fio-sync-randread micro-fio-sync-randwrite \
+					metadata-fdtree"
 
 # 
 # Which file size should be used in proportion to memory
@@ -39,11 +49,16 @@ benchmark_exclude=""
 io_size_ratio="0.5 2"
 
 #
+# Where the lua scripts of sysbench will be loacated
+#
+sysbench_lua=/home/roraouf/fsbench/sysbench-lua
+
+#
 # Number of records in MySQL benchmark
 #
-records_num=10000000
+records_num=1000
 
 #
 # Number of transactions in MySQL benchmark
 #
-trans_num=1000000
+trans_num=100
