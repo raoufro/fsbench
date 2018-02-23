@@ -2,8 +2,6 @@
 
 clear
 
-export fsbench_utils_dir=$PWD/fsbench-utils
-
 . config || {
     cat << EOF
 There's no config file in the current directory.
@@ -12,6 +10,14 @@ Please create it (see config.sample).
 EOF
     exit 1
 }
+
+export device mount_dir
+export logfile
+export runs
+export iosched_exclude benchmark_exclude
+export io_size_ratio sysbench_lua
+export records_num trans_num
+export fsbench_utils_dir=$PWD/fsbench-utils
 
 mkdir -p `dirname ${logfile}`
 
@@ -23,7 +29,7 @@ cleanup()
 
 get_result_name()
 {
-    result=`readlink -m "${result_dir}/${index}/${fs_name}/${iosched_name}-${benchmark_name}"`
+    result=`readlink -m "${result_dir}/${index}/${fs_name}/${encryption}-${iosched_name}-${benchmark_name}"`
 	export result
 }
 
@@ -33,6 +39,9 @@ run_single()
 
     get_result_name
 
+    # This prevents running again a test, so if we have a crash, we don't run
+    # the completed tests again
+    # That's why we didn't add timestamps in results
     [ -f "${result}" ] && return
 
     "${fs}" prepare
@@ -41,6 +50,32 @@ run_single()
     echo 3 > /proc/sys/vm/drop_caches
     "${benchmark}" run
     "${fs}" cleanup
+}
+
+single_run_dmcrypt()
+{
+    echo -e "\n${encryption}/${fs_name}/${iosched_name}/${benchmark_name}(run${index})"
+    get_result_name
+
+    [ -f "${result}" ] && return
+
+    # Save original device name to prevent changing common 
+    # in fs/iosched/benchmark
+    orig_device=$device
+    echo -n "benchmark" | cryptsetup --cipher aes-xts-plain64\
+        --key-size 256 --hash sha256 \
+        --iter-time 2000 --use-urandom\
+        luksFormat ${orig_device} -
+    echo -n "benchmark" | cryptsetup open ${orig_device} dmcrypt_device
+    device="/dev/mapper/dmcrypt_device"
+    ${iosched} prepare
+    ${fs} prepare
+    mkdir -p `dirname ${result}`
+    echo 3 > /proc/sys/vm/drop_caches
+    ${benchmark} run
+    ${fs} cleanup
+    cryptsetup close dmcrypt_device
+    device=${orig_device}   # Restore device
 }
 
 run()
@@ -68,6 +103,39 @@ run()
 	done
 }
 
+encryption_benchmark()
+{
+	echo -e "##########$(date)##########\n" > $logfile
+
+	for index in $(seq 1 ${runs:-1}); do
+		for iosched in iosched/* ; do
+			[ -x "${iosched}" ] && "${iosched}" use || continue
+			iosched_name=`basename ${iosched}`
+
+            for fs in fs/*/* ; do
+                [ -x "${fs}" ] || continue
+                fs_name=`basename ${fs}`
+                trap cleanup EXIT
+
+                for benchmark in benchmark/* ; do
+                    [ -x "${benchmark}" ] && "${benchmark}" use || continue
+                    benchmark_name=`basename ${benchmark}`
+
+                    # dm-crypt
+                    export encryption="dmcrypt"
+                    single_run_dmcrypt
+
+                    # fscrypto
+                    export encryption="fscryto"
+                    single_run_fscrypto
+
+                done
+			done
+		done
+	done
+}
+
+
 print_help()
 {
     cat << EOF
@@ -86,6 +154,10 @@ case "$1" in
 
     run_single)
         run_single
+        ;;
+
+    encryption_benchmark)
+        encryption_benchmark
         ;;
 
 	show)

@@ -2,4 +2,4 @@ result/
 log/
 fsbench-results/
 *.pyc
-config
+*config

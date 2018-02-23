@@ -1,5 +1,5 @@
 [global]
-size=$mb_memory*(2^20)/2
+size=$mb_memory*(2^20)/4
 ioengine=pvsync
 direct=0
 directory=${mount_dir}

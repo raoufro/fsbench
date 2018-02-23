@@ -1,5 +1,5 @@
 [global]
-size=$mb_memory*(2^20)/2
+size=$mb_memory*(2^20)/4
 ioengine=psync
 directory=${mount_dir}
 direct=0
