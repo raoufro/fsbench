@@ -37,22 +37,23 @@ run_single()
 {
     trap cleanup EXIT
 
+    echo -e "\n${encryption}/${fs_name}/${iosched_name}/${benchmark_name}(run${index})"
     get_result_name
 
     # This prevents running again a test, so if we have a crash, we don't run
     # the completed tests again
     # That's why we didn't add timestamps in results
-    [ -f "${result}" ] && return
+    [ -f ${result} ] && return
 
-    "${fs}" prepare
-    "${iosched}" prepare
-    mkdir -p `dirname "${result}"`
+    ${fs} prepare
+    ${iosched} prepare
+    mkdir -p `dirname ${result}`
     echo 3 > /proc/sys/vm/drop_caches
-    "${benchmark}" run
-    "${fs}" cleanup
+    ${benchmark} run
+    ${fs} cleanup
 }
 
-single_run_dmcrypt()
+run_single_dmcrypt()
 {
     echo -e "\n${encryption}/${fs_name}/${iosched_name}/${benchmark_name}(run${index})"
     get_result_name
@@ -78,6 +79,33 @@ single_run_dmcrypt()
     device=${orig_device}   # Restore device
 }
 
+run_single_fscrypto()
+{
+    echo -e "\n${encryption}/${fs_name}/${iosched_name}/${benchmark_name}(run${index})"
+    get_result_name
+
+    [ -f "${result}" ] && return
+
+    ${iosched} prepare
+    ${fs} prepare
+    mkdir -p `dirname ${result}`
+    echo 3 > /proc/sys/vm/drop_caches
+
+    ### Add fscrypt command here for the mount point ###
+    fscrypt setup --quiet --force
+    fscrypt setup ${mount_dir} --quiet
+    orig_mount_dir=$mount_dir
+    mount_dir="$mount_dir/encrypt_dir"
+    mkdir -p $mount_dir
+    echo "benchmark" | fscrypt encrypt ${mount_dir} --quiet\
+    --user=root --source=custom_passphrase --name="Super Secret"
+
+    ${benchmark} run
+    mount_dir=$orig_mount_dir
+    fscrypt purge ${mount_dir} --quiet --force --user=root
+    ${fs} cleanup
+}
+
 run()
 {
 	echo -e "##########$(date)##########\n" > $logfile
@@ -94,8 +122,8 @@ run()
 				for fs in fs/*/* ; do
 					[ -x "${fs}" ] || continue
 					fs_name=`basename ${fs}`
-					echo -e "\n${fs_name}/${iosched_name}/${benchmark_name}(run${index})"
 
+                    export encryption="none"
 					run_single
 				done
 			done
@@ -121,13 +149,17 @@ encryption_benchmark()
                     [ -x "${benchmark}" ] && "${benchmark}" use || continue
                     benchmark_name=`basename ${benchmark}`
 
+                    # none
+                    export encryption="none"
+                    run_single
+
                     # dm-crypt
                     export encryption="dmcrypt"
-                    single_run_dmcrypt
+                    run_single_dmcrypt
 
                     # fscrypto
                     export encryption="fscryto"
-                    single_run_fscrypto
+                    run_single_fscrypto
 
                 done
 			done
