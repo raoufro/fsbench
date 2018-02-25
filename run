@@ -106,6 +106,29 @@ run_single_fscrypto()
     ${fs} cleanup
 }
 
+run_single_ecryptfs()
+{
+   echo -e "\n${encryption}/${fs_name}/${iosched_name}/${benchmark_name}(run${index})"
+    get_result_name
+
+    [ -f ${result} ] && return
+
+    ${iosched} prepare
+    ${fs} prepare
+    mkdir -p `dirname ${result}`
+    echo 3 > /proc/sys/vm/drop_caches
+
+    ecryptfs_sig=$(printf "%s" "benchmark" | ecryptfs-add-passphrase \
+                | grep -oE "[[[:alnum:]]+]" | grep -oE "[[:alnum:]]+")
+    mount -i -t ecryptfs \
+        -o ecryptfs_sig=${ecryptfs_sig},ecryptfs_fnek_sig=${ecryptfs_sig},ecryptfs_cipher=aes,ecryptfs_key_bytes=32\
+        ${mount_dir} ${mount_dir}
+    ${benchmark} run
+    umount ${mount_dir}
+
+    ${fs} cleanup
+}
+
 run()
 {
 	echo -e "##########$(date)##########\n" > $logfile
@@ -131,7 +154,7 @@ run()
 	done
 }
 
-encryption_benchmark()
+run_encrypted()
 {
 	echo -e "##########$(date)##########\n" > $logfile
 
@@ -154,12 +177,16 @@ encryption_benchmark()
                     run_single
 
                     # dm-crypt
-                    export encryption="dmcrypt"
+                    encryption="dmcrypt"
                     run_single_dmcrypt
 
                     # fscrypto
-                    export encryption="fscryto"
+                    encryption="fscryto"
                     run_single_fscrypto
+
+                    # ecryptfs
+                    encryption="ecryptfs"
+                    run_single_ecryptfs
 
                 done
 			done
@@ -173,9 +200,11 @@ print_help()
     cat << EOF
 Usage: run [help]
 
-	run:		run benchmarks
-	show:		show the results of benchmarks
-	run help:	this help
+    run:    run benchmarks
+    run_encrypted:   run benchmarks based on dm-crypt, ecryptfs, fscrypto
+                     encryption methods
+    show:   show the results of benchmarks
+    run help:   this help
 EOF
 }
 
@@ -184,18 +213,15 @@ case "$1" in
         run
         ;;
 
-    run_single)
-        run_single
-        ;;
-
-    encryption_benchmark)
-        encryption_benchmark
+    run_encrypted)
+        run_encrypted
         ;;
 
 	show)
 		python fsbench-utils/show_benchmarks.py config
 		;;
-    *)
+
+    help|*)
         print_help
         ;;
 
