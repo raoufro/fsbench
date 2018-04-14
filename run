@@ -64,9 +64,7 @@ run_single_dmcrypt()
     # in fs/iosched/benchmark
     orig_device=$device
     echo -n "benchmark" | cryptsetup --cipher aes-xts-plain64\
-        --key-size 256 --hash sha256 \
-        --iter-time 2000 --use-urandom\
-        luksFormat ${orig_device} -
+        --key-size 256 luksFormat ${orig_device} -
     echo -n "benchmark" | cryptsetup open ${orig_device} dmcrypt_device
     device="/dev/mapper/dmcrypt_device"
     ${iosched} prepare
@@ -120,12 +118,17 @@ run_single_ecryptfs()
 
     ecryptfs_sig=$(printf "%s" "benchmark" | ecryptfs-add-passphrase \
                 | grep -oE "[[[:alnum:]]+]" | grep -oE "[[:alnum:]]+")
+    orig_mount_dir=$mount_dir
+    mount_dir="$mount_dir/encrypt_dir"
+    mkdir -p $mount_dir
+    sleep 10
     mount -i -t ecryptfs \
         -o ecryptfs_sig=${ecryptfs_sig},ecryptfs_fnek_sig=${ecryptfs_sig},ecryptfs_cipher=aes,ecryptfs_key_bytes=32\
         ${mount_dir} ${mount_dir}
     ${benchmark} run
     umount ${mount_dir}
 
+    mount_dir=$orig_mount_dir
     ${fs} cleanup
 }
 
