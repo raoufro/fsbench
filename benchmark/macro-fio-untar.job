@@ -8,6 +8,7 @@ thread=1
 group_reporting=1
 unified_rw_reporting=1
 file_service_type=sequential
+invalidate=1
 
 [untar]
 rw=${RW}
